@@ -27,6 +27,41 @@
             margin-top: 30px;
             font-size: 50px;
             display: none;
+            animation: popAnimation 1.5s forwards;
+        }
+        @keyframes popAnimation {
+            0% {
+                transform: scale(1);
+                opacity: 0;
+            }
+            30% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            60% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        .heart, .flower, .balloon {
+            animation: float 3s infinite;
+            position: absolute;
+            z-index: 999;
+            font-size: 30px;
+        }
+        .heart { animation-duration: 2s; }
+        .flower { animation-duration: 2.5s; }
+        .balloon { animation-duration: 3s; }
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                transform: translateY(-300px) scale(1.5);
+            }
         }
     </style>
 </head>
@@ -61,10 +96,30 @@
             .then(data => {
                 console.log('Location saved:', data);
                 document.getElementById("celebration").style.display = "block";
+                triggerAnimation();  // Start animation after saving location
             })
             .catch(error => {
                 console.error('Error saving location:', error);
             });
+        }
+
+        function triggerAnimation() {
+            // Trigger hearts, flowers, and balloons popping
+            createElement('❤️', 'heart');
+            createElement('🌸', 'flower');
+            createElement('🎈', 'balloon');
+        }
+
+        function createElement(symbol, className) {
+            const element = document.createElement('div');
+            element.classList.add(className);
+            element.innerText = symbol;
+            document.body.appendChild(element);
+
+            // Remove the element after animation completes
+            setTimeout(() => {
+                element.remove();
+            }, 3000);
         }
 
         function showError(error) {
